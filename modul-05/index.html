@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Contract Interaction</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+    <h1>Smart Contract Interaction</h1>
+    <button id="calculatePrizesButton">Calculate Prizes Projection</button>
+    <button id="makeMoveButton">Make Move</button>
+
+    <script>
+        const contractAddress = '0xe4EE33F790f790950E0064E0E5aC474BE36d577F';
+        const contractABI = 0xe4EE33F790f790950E0064E0E5aC474BE36d577F;
+
+        let web3;
+        let contract;
+
+        window.addEventListener('load', async () => {
+            // Check if Web3 has been injected by the browser (MetaMask)
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                try {
+                    // Request account access
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                } catch (error) {
+                    console.error("User denied account access", error);
+                }
+            } else {
+                console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+            }
+
+            // Initialize contract
+            contract = new web3.eth.Contract(contractABI, contractAddress);
+
+            // Attach event listeners to buttons
+            document.getElementById('calculatePrizesButton').addEventListener('click', calculatePrizesProjection);
+            document.getElementById('makeMoveButton').addEventListener('click', makeMove);
+        });
+
+        async function calculatePrizesProjection() {
+            try {
+                const result = await contract.methods.calculatePrizesProjection().call();
+                console.log("Prizes Projection:", result);
+            } catch (error) {
+                console.error("Error calling calculatePrizesProjection", error);
+            }
+        }
+
+        async function makeMove() {
+            const accounts = await web3.eth.getAccounts();
+            const account = accounts[0];
+            try {
+                const result = await contract.methods.makeMove().send({ from: account });
+                console.log("Move made:", result);
+            } catch (error) {
+                console.error("Error calling makeMove", error);
+            }
+        }
+    </script>
+</body>
+</html>
