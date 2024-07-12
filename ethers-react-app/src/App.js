@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import React, { useEffect, useState } from 'react';
+import { calculatePrizesProjection, makeMove } from 'src/contract';
 import { ethers } from 'ethers';
 
 function App() {
@@ -14,6 +15,17 @@ function App() {
     } catch (error) {
       console.error('Error fetching balance:', error);
     }
+  };
+
+  const [prizesProjection, setPrizesProjection] = useState(null);
+
+  const handleCalculatePrizes = async () => {
+    const result = await calculatePrizesProjection();
+    setPrizesProjection(result);
+  };
+
+  const handleMakeMove = async () => {
+    await makeMove();
   };
 
   return (
@@ -32,6 +44,12 @@ function App() {
           <p>{balance} ETH</p>
         </div>
       )}
+      <header className="App-header">
+        <h1>Smart Contract Interaction</h1>
+        <button onClick={handleCalculatePrizes}>Calculate Prizes Projection</button>
+        <button onClick={handleMakeMove}>Make Move</button>
+        {prizesProjection && <p>Prizes Projection: {prizesProjection}</p>}
+      </header>
     </div>
   );
 }
